@@ -2,16 +2,46 @@ const APIURL = "https://api.github.com/users/";
 
 const form = document.getElementById("form");
 const search = document.getElementById("search")
+const main = document.getElementById("main")
 
 async function getUser(username) {
   try {
     const { data } = await axios(APIURL + username);
 
-    console.log(data);
+    creatUserCard(data);
   } catch (err) {
-    console.log(err);
+    if(err.response.status == 404){
+      createErrorCard("No user found");
+    }
   }
 }
+
+function creatUserCard(user){
+  const cardHTML = `<div class="card">
+  <div>
+    <img
+      src="${user.avatar_url}"
+      alt="${user.name}"
+      class="avatar"
+    />
+  </div>
+  <div class="user-info">
+    <h2>${user.name}</h2>
+    <p>${user.bio}</p>
+
+    <ul>
+      <li>${user.followers} Followers</li>
+      <li>${user.following} Following</li>
+      <li>${user.public_repos} Repos</li>
+    </ul>
+
+    <div id="repos"></div>
+  </div>
+</div>`
+
+main.innerHTML = cardHTML
+}
+
 
 form.addEventListener("submit", (e)=> {
   e.preventDefault();
@@ -25,4 +55,11 @@ form.addEventListener("submit", (e)=> {
   }
 });
 
+function createErrorCard(msg){
+  const cardHTML = `
+  <div class="card"
+  <h1>${msg}</h1>
+  </div>`
+  main.innerHTML = cardHTML
+}
 
